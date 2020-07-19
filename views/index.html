@@ -1,0 +1,119 @@
+<html ng-app="myapp">
+<head>
+	<title>welcome to home page</title>
+	<script type="text/javascript" src="lib/angular.min.js"></script>
+	 <script type="text/javascript" src="script/firstapp.js"></script>
+	<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</head>
+<body  ng-controller="myclr">
+<h1>welcome to angularjs</h1>
+<div class="container">
+<div class="row">
+<div  class="col-md-4">
+
+		<h4>Student Details</h4>
+  <div class="panel panel-default">
+    <div class="panel-body">
+   
+    	<label>Name:</label><input class="form-control" type="text" ng-model="stu.name" placeholder="enter the name" ><br>
+<label>Age:</label><input class="form-control" type="text" ng-model="stu.age" placeholder="enter the age"><br>
+
+<label>Email:</label><input type="text" class="form-control" ng-model="stu.email" placeholder="enter the Email" ><br>
+
+	
+<button class="btn btn-success"  ng-click="add()">save</button><button class="btn btn-success"  ng-click="update()">update</button><button class="btn btn-success"  ng-click="clear()">clear</button></div></div></div>
+<div class="row">
+	<div class="panel panel-default">
+    <div class="panel-body">
+  
+<table class="table table-hover">
+<tr><th>Name</th><th>Age</th><th>Contact</th><th>Email</th><th></th><th></th></tr>
+<tr ng-repeat="item in sarray"><td>{{item.name}}</td>
+<td>{{item.age}}</td>
+<td>{{item.email}}</td>
+<td><button ng-click="edit(item)"> <span class="glyphicon glyphicon-edit"></span></button></td>
+<td><button ng-click="delete(item)"><span class="glyphicon glyphicon-remove-sign"></span></button></td></tr></table></div>
+</div>
+</div>
+</div>
+</div>
+
+<script>
+var app=angular.module('myapp',[]);
+app.controller('myclr',function($scope,$http)
+{
+	 $scope.sarray=[];
+	 $scope.clear=function()
+	 {
+	 	$scope.stu="";
+	 }
+var refresh=function()
+ {
+		$http.get('/student/getallstudents')
+	.success(function(res)
+	{
+		// console.log(res);
+		$scope.sarray=res;
+	});
+}
+refresh();
+$scope.clear();
+	$scope.add=function()
+	{
+	$http.post('/student/studentsave',$scope.stu)
+		.success(function(res){
+			refresh();
+			$scope.clear();
+			  console.log(res)
+			  })
+		.error(function(err){
+				console.log(err)
+			
+		});
+		
+	}
+	$scope.update=function(stu)
+	{
+		
+		
+		$http.put('/student/studentupdate/'+$scope.stu._id,$scope.stu)
+		.success(function(res){
+			refresh();
+			$scope.clear();
+			console.log(res)}).
+		error(function(err){
+			console.log(err)
+		});
+		
+	}
+
+$scope.edit=function(st)
+	{
+		$scope.stu=st;
+		
+		
+	}
+
+	
+$scope.delete=function(stu)
+	{
+
+		
+		$http.delete('/student/studentdelete/'+stu._id)
+		.success(function(res){
+			refresh();
+			$scope.clear();
+			console.log(res)}).
+		error(function(err){
+			console.log(err)
+		});
+		
+	}
+});	
+</script>
+</body>
+</html>
